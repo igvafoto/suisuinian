@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="碎碎念" />
+  <meta name="theme-color" content="#ff8a65" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>碎碎念 · 语音日记</title>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span class="brand-name">碎碎念</span>
+      </div>
+      <button id="btnSettings" class="icon-btn" aria-label="设置">⚙︎</button>
+    </header>
+
+    <main class="screen" id="screenCapture">
+      <section class="capture-card">
+        <p class="capture-hint" id="captureHint">想说什么，按住说话，或点麦克风开始</p>
+        <div class="mic-wrap">
+          <button id="btnMic" class="mic-btn" aria-label="开始说话">
+            <span class="mic-glyph">🎙️</span>
+          </button>
+        </div>
+        <div class="live-text" id="liveText" hidden></div>
+        <textarea id="inputBox" class="input-box" rows="3" placeholder="也可以在这里直接打字，或点文本框后再点键盘上的麦克风按钮说话…"></textarea>
+        <div class="capture-actions">
+          <button id="btnSave" class="primary-btn">保存这条碎碎念</button>
+        </div>
+      </section>
+
+      <div class="report-banner" id="reportBanner" hidden>
+        <div class="report-banner-text">
+          <strong>昨天有 <span id="bannerCount">0</span> 条碎碎念</strong>
+          <span>点我生成今日回顾</span>
+        </div>
+        <button id="btnGenFromBanner" class="ghost-btn">生成报告</button>
+      </div>
+
+      <section class="today-wrap">
+        <div class="section-head">
+          <h2>今天的碎碎念</h2>
+          <span class="count-pill" id="todayCount">0 条</span>
+        </div>
+        <div class="entries" id="todayEntries"></div>
+      </section>
+    </main>
+
+    <main class="screen" id="screenAll" hidden>
+      <div class="section-head">
+        <h2>全部记录</h2>
+      </div>
+      <div class="entries" id="allEntries"></div>
+    </main>
+
+    <main class="screen" id="screenReport" hidden>
+      <div class="section-head">
+        <h2>今日回顾</h2>
+        <button id="btnGenReport" class="ghost-btn">生成昨日报告</button>
+      </div>
+      <div class="reports" id="reportList"></div>
+    </main>
+
+    <nav class="tabbar">
+      <button class="tab active" data-tab="capture"><span>🏠</span><label>记录</label></button>
+      <button class="tab" data-tab="all"><span>📜</span><label>全部</label></button>
+      <button class="tab" data-tab="report"><span>🌿</span><label>回顾</label></button>
+    </nav>
+  </div>
+
+  <!-- 设置弹层 -->
+  <div class="sheet-mask" id="settingsMask" hidden>
+    <div class="sheet">
+      <div class="sheet-head">
+        <h3>设置</h3>
+        <button id="btnCloseSettings" class="icon-btn">✕</button>
+      </div>
+      <div class="sheet-body">
+        <label class="field">
+          <span>DeepSeek API Key</span>
+          <input id="inputApiKey" type="password" placeholder="粘贴你的 key，如 sk-..." autocomplete="off" />
+          <small>用于自动生成报告。去 platform.deepseek.com 注册即可拿到，很便宜。不填也能用，只是报告要手动发给我。</small>
+        </label>
+        <label class="field">
+          <span>提醒时间</span>
+          <input id="inputNotifyTime" type="time" value="09:00" />
+          <small>每天这个时间点，打开 App 时会提醒你来看昨天的回顾。</small>
+        </label>
+        <button id="btnExport" class="ghost-btn wide">复制全部碎碎念给小巴</button>
+        <button id="btnClearAll" class="danger-btn wide">清空所有数据</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
