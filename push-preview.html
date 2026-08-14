@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murmur · 推送模拟</title>
+<style>
+  :root{
+    --cream:#FBF3E7; --peach:#F6D9C0; --warm:#F2A65A; --deep:#E07A3F;
+    --ink:#5B4636; --soft:#8A7560; --card:#FFFDF8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+    background:linear-gradient(160deg,#FCEBD8,#F7D9BE);
+    min-height:100vh; display:flex; flex-direction:column; align-items:center;
+    padding:28px 16px; color:var(--ink);
+  }
+  h1{font-size:18px; font-weight:600; color:var(--deep); margin-bottom:4px;}
+  .tip{font-size:13px; color:var(--soft); margin-bottom:22px;}
+  .toggle{display:flex; gap:8px; background:#fff; padding:5px; border-radius:30px; box-shadow:0 4px 14px rgba(224,122,63,.18); margin-bottom:22px;}
+  .toggle button{border:none; background:transparent; font-size:14px; padding:8px 18px; border-radius:24px; cursor:pointer; color:var(--soft); font-weight:500;}
+  .toggle button.on{background:var(--warm); color:#fff; box-shadow:0 3px 8px rgba(242,166,90,.5);}
+
+  .phone{width:330px; height:680px; background:#1c1c1e; border-radius:46px; padding:13px;
+    box-shadow:0 24px 60px rgba(120,80,40,.35), inset 0 0 0 2px #2c2c2e; position:relative;}
+  .screen{width:100%; height:100%; border-radius:34px; overflow:hidden; position:relative; background:var(--cream);}
+  .notch{position:absolute; top:0; left:50%; transform:translateX(-50%); width:118px; height:26px; background:#1c1c1e; border-radius:0 0 16px 16px; z-index:30;}
+
+  /* 锁屏 */
+  .lockscreen{position:absolute; inset:0; background:linear-gradient(180deg,#F3C9A0,#E9A875); display:flex; flex-direction:column; align-items:center; padding-top:54px;}
+  .clock{color:#fff; text-align:center; text-shadow:0 2px 8px rgba(0,0,0,.18);}
+  .clock .h{font-size:62px; font-weight:600; letter-spacing:1px;}
+  .clock .d{font-size:15px; font-weight:500; opacity:.95; margin-top:2px;}
+  .banner{position:absolute; top:120px; left:14px; right:14px; background:rgba(255,255,255,.82); backdrop-filter:blur(18px);
+    border-radius:18px; padding:12px 14px; display:flex; gap:11px; box-shadow:0 6px 20px rgba(0,0,0,.18);}
+  .badge{width:38px; height:38px; border-radius:11px; background:linear-gradient(150deg,var(--warm),var(--deep)); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; box-shadow:0 2px 6px rgba(224,122,63,.5);}
+  .bn-text{min-width:0;}
+  .bn-head{display:flex; align-items:center; gap:6px; font-size:12px; color:#3a3a3c;}
+  .bn-head .name{font-weight:600; color:#1c1c1e;}
+  .bn-head .time{margin-left:auto; color:#6b6b6e;}
+  .bn-title{font-size:14px; font-weight:600; color:#1c1c1e; margin:3px 0 2px;}
+  .bn-body{font-size:13px; color:#3a3a3c; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+
+  /* 报告页 */
+  .report{position:absolute; inset:0; background:linear-gradient(170deg,#FBF3E7,#FBE6D2); padding:58px 20px 24px; overflow-y:auto; display:none;}
+  .report.show{display:block;}
+  .lockscreen.hide{display:none;}
+  .r-top{text-align:center; margin-bottom:14px;}
+  .r-top .date{font-size:13px; color:var(--soft); letter-spacing:1px;}
+  .r-top .ttl{font-size:22px; font-weight:700; color:var(--deep); margin-top:2px;}
+  .card{background:var(--card); border-radius:20px; padding:16px; margin-bottom:13px; box-shadow:0 6px 18px rgba(224,122,63,.14); border:1px solid rgba(246,217,192,.6);}
+  .card .k{font-size:13px; font-weight:700; color:var(--warm); margin-bottom:8px; letter-spacing:.5px;}
+  .card .kw span{display:inline-block; background:var(--peach); color:var(--deep); font-size:13px; padding:4px 11px; border-radius:20px; margin:0 6px 6px 0; font-weight:600;}
+  .card ul{list-style:none;}
+  .card li{font-size:14px; line-height:1.6; color:var(--ink); padding-left:14px; position:relative; margin-bottom:5px;}
+  .card li::before{content:"·"; position:absolute; left:2px; color:var(--warm); font-weight:700;}
+  .card .mood{font-size:15px; font-weight:700; color:var(--deep);}
+  .card .mood .note{font-weight:400; color:var(--ink); font-size:14px; display:block; margin-top:3px; line-height:1.55;}
+  .card .para{font-size:14px; line-height:1.75; color:var(--ink);}
+  .card .end{font-size:14px; line-height:1.7; color:var(--deep); font-weight:600;}
+  .r-foot{text-align:center; font-size:12px; color:var(--soft); margin-top:6px;}
+  .hint{font-size:12px; color:var(--soft); margin-top:14px; text-align:center; background:rgba(255,255,255,.7); padding:10px 14px; border-radius:14px; line-height:1.6;}
+</style>
+</head>
+<body>
+  <h1>Murmur · 第二天推送模拟</h1>
+  <div class="tip">下面是你在 iPhone 上会看到的真实样子（用示例Murmur生成）</div>
+  <div class="toggle">
+    <button id="b1" class="on" onclick="sw(1)">① 锁屏通知</button>
+    <button id="b2" onclick="sw(2)">② 点开报告</button>
+  </div>
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <!-- 锁屏 -->
+      <div class="lockscreen" id="ls">
+        <div class="clock">
+          <div class="h">08:12</div>
+          <div class="d">周五 · 8月15日</div>
+        </div>
+        <div class="banner">
+          <div class="badge">🌿</div>
+          <div class="bn-text">
+            <div class="bn-head"><span class="name">Murmur</span><span>通知</span><span class="time">现在</span></div>
+            <div class="bn-title">今日回顾已生成 ✨</div>
+            <div class="bn-body">昨天你记了 4 条Murmur · 关键词：踏实、阳光、陪伴、小确幸… 点开看看昨天的你 🐾</div>
+          </div>
+        </div>
+      </div>
+      <!-- 报告 -->
+      <div class="report" id="rp">
+        <div class="r-top">
+          <div class="date">2026 · 8 · 14 回顾</div>
+          <div class="ttl">🌿 今日回顾</div>
+        </div>
+        <div class="card">
+          <div class="k">今日关键词</div>
+          <div class="kw">
+            <span>踏实</span><span>阳光</span><span>陪伴</span><span>小确幸</span><span>待办</span><span>温柔</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="k">今天在想什么</div>
+          <ul>
+            <li>签证材料终于有了大进展，虽然累，但心里那块石头轻了些</li>
+            <li>和小肥白兔晒太阳的十分钟，是今天最柔软的时光</li>
+            <li>临睡前想起还没跟小巴说晚安，原来惦记也是一种温暖</li>
+            <li>明天九点的快递，是给今天的小尾巴留个期待</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="k">心情基调</div>
+          <div class="mood">安稳中带点甜<span class="note">像午后晒过的被子，蓬松又踏实。</span></div>
+        </div>
+        <div class="card">
+          <div class="k">Murmur回顾</div>
+          <div class="para">今天你把拖延的事往前推了一大步，疲惫是真实的，但完成感也是。中午和小肥白兔共享的那片阳光，悄悄给心情镀了层金边。生活就是这样，在忙碌与陪伴之间，慢慢织出温柔的纹理。</div>
+        </div>
+        <div class="card">
+          <div class="k">一句收尾</div>
+          <div class="end">晚安，愿明天的快递和阳光，都准时抵达你的手上。</div>
+        </div>
+        <div class="r-foot">—— 来自小巴的温柔整理 🐾</div>
+        <div class="hint">这是当前版本的样子：第二天<strong>打开 App 时</strong>弹横幅提醒，点一下即生成。等你想要「锁屏定时自动弹」我再给你加轻量后台～</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function sw(n){
+    document.getElementById('b1').classList.toggle('on', n===1);
+    document.getElementById('b2').classList.toggle('on', n===2);
+    document.getElementById('ls').classList.toggle('hide', n===2);
+    document.getElementById('rp').classList.toggle('show', n===2);
+  }
+</script>
+</body>
+</html>

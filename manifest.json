@@ -1,7 +1,7 @@
 {
-  "name": "碎碎念 · 语音日记",
-  "short_name": "碎碎念",
-  "description": "随时用语音记录碎碎念，第二天自动整理成温暖的今日回顾",
+  "name": "Murmur · 语音日记",
+  "short_name": "Murmur",
+  "description": "随时用语音记录Murmur，第二天自动整理成温暖的今日回顾",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

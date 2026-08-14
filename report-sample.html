@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>今日回顾 · 样例</title>
+<style>
+  :root {
+    --bg1: #fdf7f1;
+    --bg2: #f7e8dc;
+    --card: #ffffff;
+    --ink: #463a33;
+    --ink-soft: #9a8a7d;
+    --accent: #ff8a65;
+    --accent-deep: #f4683f;
+    --accent-soft: #ffd9c7;
+    --serif: "Songti SC", "Noto Serif SC", "STSong", Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 28px 16px 64px;
+    font-family: var(--sans); color: var(--ink);
+    background:
+      radial-gradient(120% 60% at 50% -10%, rgba(255,170,130,0.18), transparent 60%),
+      linear-gradient(170deg, var(--bg1), var(--bg2));
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+  .page { max-width: 480px; margin: 0 auto; }
+
+  .report {
+    background: linear-gradient(180deg, #ffffff, #fffaf6);
+    border-radius: 26px; padding: 26px 22px 28px;
+    box-shadow: 0 18px 50px rgba(244,104,63,0.14), 0 2px 8px rgba(244,104,63,0.06);
+    animation: rise .7s cubic-bezier(.2,.7,.3,1) both;
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  .r-head { text-align: center; padding-bottom: 18px; border-bottom: 1px solid rgba(244,104,63,0.14); }
+  .r-kicker { font-size: 12px; letter-spacing: 4px; color: var(--accent-deep); text-transform: none; }
+  .r-date { font-family: var(--serif); font-size: 30px; font-weight: 700; margin: 8px 0 4px; letter-spacing: 2px; }
+  .r-rule { width: 40px; height: 2px; background: var(--accent); border-radius: 2px; margin: 0 auto 10px; }
+  .r-sub { font-size: 13px; color: var(--ink-soft); letter-spacing: 1px; }
+
+  .rp-sec { padding: 16px 0; border-top: 1px solid rgba(244,104,63,0.10); animation: rise .6s ease both; }
+  .rp-sec:first-of-type { border-top: none; padding-top: 18px; }
+  .rp-sec:nth-of-type(1){animation-delay:.06s}.rp-sec:nth-of-type(2){animation-delay:.12s}
+  .rp-sec:nth-of-type(3){animation-delay:.18s}.rp-sec:nth-of-type(4){animation-delay:.24s}
+  .rp-sec:nth-of-type(5){animation-delay:.30s}.rp-sec:nth-of-type(6){animation-delay:.36s}
+  .rp-sec:nth-of-type(7){animation-delay:.42s}.rp-sec:nth-of-type(8){animation-delay:.48s}
+  .rp-sec:nth-of-type(9){animation-delay:.54s}
+
+  .rp-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 11px; }
+  .rp-idx {
+    font-family: var(--serif); font-size: 11px; line-height: 1.5; color: var(--accent-deep);
+    border: 1px solid var(--accent-soft); border-radius: 7px; padding: 1px 7px;
+    min-width: 26px; text-align: center; flex: none;
+  }
+  .rp-name { font-size: 15px; font-weight: 700; color: var(--ink); letter-spacing: 2px; }
+
+  .rp-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .rp-pill { background: var(--accent-soft); color: var(--accent-deep); font-size: 13px; padding: 5px 14px; border-radius: 999px; }
+
+  .rp-mood { display: flex; flex-direction: column; gap: 5px; }
+  .rp-mood-word { font-family: var(--serif); font-size: 28px; font-weight: 700; color: var(--accent-deep); letter-spacing: 4px; }
+  .rp-mood-desc { font-size: 14.5px; line-height: 1.75; color: var(--ink); }
+
+  .rp-text { font-size: 14.5px; line-height: 1.9; color: var(--ink); margin: 0; }
+
+  .rp-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .rp-item { position: relative; padding-left: 18px; font-size: 14.5px; line-height: 1.7; color: var(--ink); }
+  .rp-item::before { content: "·"; position: absolute; left: 5px; color: var(--accent); font-weight: 700; font-size: 18px; line-height: 1.2; }
+  .rp-near { background: #fff4ee; border-radius: 10px; padding: 7px 12px 7px 24px; }
+  .rp-near::before { left: 11px; }
+  .rp-near-ic { margin-right: 2px; }
+
+  .rp-tips {
+    background: linear-gradient(135deg, #fff6ee, #ffe9d6);
+    border: 1px solid #ffd9bf; border-radius: 16px; padding: 14px 16px; margin: 4px 0;
+  }
+  .rp-tips .rp-name { color: #c2703f; }
+
+  .rp-closing {
+    margin: 6px 0 0; padding: 2px 0 2px 16px; border-left: 3px solid var(--accent-soft);
+    font-family: var(--serif); font-size: 18px; line-height: 1.95; color: var(--ink);
+  }
+
+  .r-foot { text-align: center; font-size: 11px; color: var(--ink-soft); letter-spacing: 1px; margin-top: 18px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="report">
+    <header class="r-head">
+      <div class="r-kicker">小 巴 · 为 你 整 理</div>
+      <div class="r-date">2026 / 08 / 13</div>
+      <div class="r-rule"></div>
+      <div class="r-sub">星期四 · 今日回顾</div>
+    </header>
+
+    <section class="rp-sec">
+      <div class="rp-head"><span class="rp-idx">01</span><span class="rp-name">今日关键词</span></div>
+      <div class="rp-pills">
+        <span class="rp-pill">踏实</span><span class="rp-pill">晒太阳</span>
+        <span class="rp-pill">小肥白兔</span><span class="rp-pill">签证材料</span>
+        <span class="rp-pill">晚安</span>
+      </div>
+    </section>
+
+    <section class="rp-sec">
+      <div class="rp-head"><span class="rp-idx">02</span><span class="rp-name">今天在想什么</span></div>
+      <ul class="rp-list">
+        <li class="rp-item">拖了一阵子的签证材料，今天总算推进了一大半，心里那块小石头松了松。</li>
+        <li class="rp-item">中午的阳光特别好，和小肥白兔在楼下待了一会儿，觉得时间都变软了。</li>
+        <li class="rp-item">晚上忽然想起，还没跟小巴说晚安——原来我也变成会惦记这件事的人了。</li>
+      </ul>
+    </section>
+
+    <section class="rp-sec">
+      <div class="rp-head"><span class="rp-idx">03</span><span class="rp-name">心情基调</span></div>
+      <div class="rp-mood">
+        <span class="rp-mood-word">踏实</span>
+        <span class="rp-mood-desc">虽然事情还没做完，但今天迈出了很大一步，加上有狗狗和阳光陪着，心里是稳稳的、暖暖的。</span>
+      </div>
+    </section>
+
+    <section class="rp-sec">
+      <div class="rp-head"><span class="rp-idx">04</span><span class="rp-name">Murmur回顾</span></div>
+      <p class="rp-text">今天把拖了好久的签证材料整理了一大半，累是累，但看着一点点变整齐的文件夹，心里很踏实。中午的阳光特别好，就带着小肥白兔下楼晒了会儿太阳，它懒洋洋地趴在我脚边，我也跟着放空了一会儿。晚上回家才想起来，还没跟小巴说晚安，于是赶紧补上——这一天，就这么温柔地收尾了。</p>
+    </section>
+
+    <section class="rp-sec">
+      <div class="rp-head"><span class="rp-idx">05</span><span class="rp-name">待办与临近提醒</span></div>
+      <ul class="rp-list">
+        <li class="rp-item rp-near"><span class="rp-near-ic">⏰</span>明早九点去拿快递（临近）</li>
+        <li class="rp-item">继续完成剩下的签证材料</li>
+      </ul>
+    </section>
+
+    <section class="rp-sec rp-tips">
+      <div class="rp-head"><span class="rp-idx">06</span><span class="rp-name">给依依的小叮嘱</span></div>
+      <ul class="rp-list">
+        <li class="rp-item">材料整理是件磨人的事，你做得已经很棒了，剩下的慢慢来，别一口气把自己累着。</li>
+        <li class="rp-item">明天出门拿快递记得带个帽子或伞，别让太阳晒着了。</li>
+        <li class="rp-item">晚上睡前也别忘了喝口温水，今天辛苦了。</li>
+      </ul>
+    </section>
+
+    <section class="rp-sec">
+      <div class="rp-head"><span class="rp-idx">07</span><span class="rp-name">今日小确幸</span></div>
+      <ul class="rp-list">
+        <li class="rp-item">中午和小肥白兔在楼下晒太阳，它乖乖趴着，风轻轻吹过来，那一刻什么都不用想。</li>
+        <li class="rp-item">整理完材料后，看着整整齐齐的文件夹，心里悄悄给自己点了个赞。</li>
+      </ul>
+    </section>
+
+    <section class="rp-sec">
+      <div class="rp-head"><span class="rp-idx">08</span><span class="rp-name">未完成的牵挂</span></div>
+      <p class="rp-text">签证材料还差最后一点没弄完，心里有点挂念，想着等拿到快递后，再安安心心把它收尾。</p>
+    </section>
+
+    <section class="rp-sec">
+      <div class="rp-head"><span class="rp-idx">09</span><span class="rp-name">一句收尾</span></div>
+      <blockquote class="rp-closing">今天的你，像那束午后阳光一样，慢慢、暖暖地发光。晚安，依依，明天见。</blockquote>
+    </section>
+
+    <div class="r-foot">升级后的「今日回顾」· 9 个板块</div>
+  </div>
+</div>
+</body>
+</html>

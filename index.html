@@ -6,20 +6,20 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="碎碎念" />
+  <meta name="apple-mobile-web-app-title" content="Murmur" />
   <meta name="theme-color" content="#ff8a65" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="apple-touch-icon-v2.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="stylesheet" href="styles.css" />
-  <title>碎碎念 · 语音日记</title>
+  <title>Murmur · 语音日记</title>
 </head>
 <body>
   <div class="app">
     <header class="topbar">
       <div class="brand">
         <span class="brand-dot"></span>
-        <span class="brand-name">碎碎念</span>
+        <span class="brand-name">Murmur</span>
       </div>
       <button id="btnSettings" class="icon-btn" aria-label="设置">⚙︎</button>
     </header>
@@ -36,13 +36,13 @@
         <textarea id="inputBox" class="input-box" rows="3" placeholder="也可以在这里直接打字，或点文本框后再点键盘上的麦克风按钮说话…"></textarea>
         <div class="capture-actions">
           <button id="btnCancelEdit" class="ghost-btn" hidden>取消修改</button>
-          <button id="btnSave" class="primary-btn">保存这条碎碎念</button>
+          <button id="btnSave" class="primary-btn">保存这条Murmur</button>
         </div>
       </section>
 
       <div class="report-banner" id="reportBanner" hidden>
         <div class="report-banner-text">
-          <strong>昨天有 <span id="bannerCount">0</span> 条碎碎念</strong>
+          <strong>昨天有 <span id="bannerCount">0</span> 条Murmur</strong>
           <span>点我生成今日回顾</span>
         </div>
         <button id="btnGenFromBanner" class="ghost-btn">生成报告</button>
@@ -58,7 +58,7 @@
 
       <section class="today-wrap">
         <div class="section-head">
-          <h2>今天的碎碎念</h2>
+          <h2>今天的Murmur</h2>
           <span class="count-pill" id="todayCount">0 条</span>
         </div>
         <div class="entries" id="todayEntries"></div>
@@ -85,7 +85,7 @@
         <h2>回收站 <span class="count-pill" id="trashCount">0</span></h2>
         <button id="btnEmptyTrash" class="ghost-btn">清空</button>
       </div>
-      <p class="trash-tip">这里放着被删掉的碎碎念，30 天后会自动清空。误删了点 ♻️ 就能找回。</p>
+      <p class="trash-tip">这里放着被删掉的Murmur，30 天后会自动清空。误删了点 ♻️ 就能找回。</p>
       <div class="entries" id="trashEntries"></div>
     </main>
 
@@ -115,7 +115,7 @@
           <input id="inputNotifyTime" type="time" value="09:00" />
           <small>每天这个时间点，打开 App 时会提醒你来看昨天的回顾。</small>
         </label>
-        <button id="btnExport" class="ghost-btn wide">复制全部碎碎念给小巴</button>
+        <button id="btnExport" class="ghost-btn wide">复制全部Murmur给小巴</button>
         <div class="backup-row">
           <button id="btnExportFile" class="ghost-btn wide">⬇️ 导出备份到文件</button>
           <button id="btnImportFile" class="ghost-btn wide">⬆️ 从备份文件恢复</button>

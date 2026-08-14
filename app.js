@@ -1,4 +1,4 @@
-/* 碎碎念 · 语音日记 —— 纯前端 PWA，数据只存在你本地手机里 */
+/* Murmur · 语音日记 —— 纯前端 PWA，数据只存在你本地手机里 */
 (function () {
   'use strict';
 
@@ -159,7 +159,7 @@
     return true;
   }
   function setSaveMode(editing) {
-    $('btnSave').textContent = editing ? '保存修改 ✓' : '保存这条碎碎念';
+    $('btnSave').textContent = editing ? '保存修改 ✓' : '保存这条Murmur';
     $('btnCancelEdit').hidden = !editing;
   }
   function startEdit(e) {
@@ -367,20 +367,20 @@
 
   function buildPrompt(ds) {
     var list = entriesOfDate(ds).map(function (e) { return '· ' + e.text; }).join('\n');
-    return '你是一个温柔的生活记录助手，名字叫小巴。下面是一位用户在「' + ds + '」这一天里随口说出的碎碎念' +
+    return '你是一个温柔的生活记录助手，名字叫小巴。下面是一位用户在「' + ds + '」这一天里随口说出的Murmur' +
       '（语音转文字，可能有口语、重复、错别字或不完整的句子）。请帮 ta 整理成一份温暖的「今日回顾」报告。\n\n' +
       '请严格按以下 9 个板块输出，每板块一行标题（带【】）：\n' +
       '1. 【今日关键词】用 3-6 个词提炼。\n' +
       '2. 【今天在想什么】归纳 2-4 条主题，每条一两句话。\n' +
       '3. 【心情基调】用两三个字判断（如平静 / 雀跃 / 焦虑 / 疲惫 / 温柔），并配一句说明。\n' +
-      '4. 【碎碎念回顾】把零散的话串成一段通顺、有温度的小结，不要逐字照搬。\n' +
-      '5. 【待办与临近提醒】从碎碎念里提取用户「将来要做的事」，尽量带上时间；若某件事时间临近（如明天 / 近几天），在后面标「⏰ 临近」。若当天没有待办，写「今天没有留下的待办～」。\n' +
+      '4. 【Murmur回顾】把零散的话串成一段通顺、有温度的小结，不要逐字照搬。\n' +
+      '5. 【待办与临近提醒】从Murmur里提取用户「将来要做的事」，尽量带上时间；若某件事时间临近（如明天 / 近几天），在后面标「⏰ 临近」。若当天没有待办，写「今天没有留下的待办～」。\n' +
       '6. 【给依依的小叮嘱】根据内容，用朋友轻轻提醒的口吻写 1-3 条关爱提醒（如累了提醒早点睡、别太拼、记得吃饭喝水）。温柔，不要说教。\n' +
       '7. 【今日小确幸】提炼当天 1-2 个最温暖、最治愈的小瞬间（像晒到太阳、和狗狗玩）。没有就写「今天平平淡淡，也很好」。\n' +
       '8. 【未完成的牵挂】记下用户想做还没做、或挂念的人 / 事，帮 ta 记着、留到以后。没有就写「今天心里很轻，没什么放不下的」。\n' +
       '9. 【一句收尾】给一句温柔的、像朋友说的话作为结尾。\n\n' +
       '整体语言轻松温暖，像在轻声读 ta 的日记。小叮嘱和提醒用关心的口吻，不要生硬说教、不要给压力。\n\n' +
-      '今日碎碎念：\n' + list;
+      '今日Murmur：\n' + list;
   }
 
   function callDeepSeek(prompt, apiKey) {
@@ -411,7 +411,7 @@
       openSettings();
       return;
     }
-    toast('正在整理' + ds + '的碎碎念…');
+    toast('正在整理' + ds + '的Murmur…');
     callDeepSeek(buildPrompt(ds), settings.apiKey)
       .then(function (content) {
         var reps = getReports();
@@ -468,7 +468,7 @@
     };
   }
 
-  // 停止并把当前没保存的内容自动存成一条碎碎念
+  // 停止并把当前没保存的内容自动存成一条Murmur
   function stopAndSave() {
     wantListening = false;
     setListening(false);
@@ -477,7 +477,7 @@
 
   function autoSaveDraft() {
     if (editingId) return; // 编辑模式下不自动存，避免新增重复条
-    if (saveEntry(elInput.value)) toast('已自动保存刚才的碎碎念 ✨');
+    if (saveEntry(elInput.value)) toast('已自动保存刚才的Murmur ✨');
   }
 
   function setListening(on) {
@@ -526,7 +526,7 @@
   function exportToXiaoba() {
     var entries = getEntries();
     if (!entries.length) { toast('还没有内容可复制'); return; }
-    var text = '小巴，帮我把这些碎碎念整理成一份温暖的今日回顾报告：\n\n';
+    var text = '小巴，帮我把这些Murmur整理成一份温暖的今日回顾报告：\n\n';
     entries.slice().reverse().forEach(function (e) {
       text += '【' + fmtTime(e.ts) + '】' + e.text + '\n';
     });
@@ -541,7 +541,7 @@
     document.body.removeChild(ta);
   }
   function clearAll() {
-    if (confirm('确定清空所有碎碎念和报告吗？此操作无法恢复。')) {
+    if (confirm('确定清空所有Murmur和报告吗？此操作无法恢复。')) {
       save(K_ENTRIES, []); save(K_REPORTS, []); setTrash([]);
       renderAll(); toast('已清空');
     }
@@ -558,7 +558,7 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = '碎碎念备份_' + dateStr() + '.json';
+    a.download = 'Murmur备份_' + dateStr() + '.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -577,7 +577,7 @@
         if (Array.isArray(data.reports)) save(K_REPORTS, data.reports);
         if (data.settings) save(K_SETTINGS, data.settings);
         renderAll();
-        toast('已从备份恢复，共 ' + (data.entries ? data.entries.length : 0) + ' 条碎碎念 ✅');
+        toast('已从备份恢复，共 ' + (data.entries ? data.entries.length : 0) + ' 条Murmur ✅');
       } catch (e) {
         toast('这个文件读不懂，恢复失败');
       }
