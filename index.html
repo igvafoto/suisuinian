@@ -80,10 +80,20 @@
       <div class="reports" id="reportList"></div>
     </main>
 
+    <main class="screen" id="screenTrash" hidden>
+      <div class="section-head">
+        <h2>回收站 <span class="count-pill" id="trashCount">0</span></h2>
+        <button id="btnEmptyTrash" class="ghost-btn">清空</button>
+      </div>
+      <p class="trash-tip">这里放着被删掉的碎碎念，30 天后会自动清空。误删了点 ♻️ 就能找回。</p>
+      <div class="entries" id="trashEntries"></div>
+    </main>
+
     <nav class="tabbar">
       <button class="tab active" data-tab="capture"><span>🏠</span><label>记录</label></button>
       <button class="tab" data-tab="all"><span>📜</span><label>全部</label></button>
       <button class="tab" data-tab="report"><span>🌿</span><label>回顾</label></button>
+      <button class="tab" data-tab="trash"><span>🗑️</span><label>回收站</label></button>
     </nav>
   </div>
 
@@ -118,11 +128,6 @@
   </div>
 
   <div class="toast" id="toast" hidden></div>
-
-  <div class="undo-bar" id="undoBar" hidden>
-    <span class="undo-text" id="undoText">已删除 1 条碎碎念</span>
-    <button class="undo-btn" id="btnUndo">撤销</button>
-  </div>
 
   <script src="app.js"></script>
 </body>

@@ -47,12 +47,11 @@
   var $ = function (id) { return document.getElementById(id); };
   var elLive = $('liveText'), elInput = $('inputBox'), elMic = $('btnMic');
   var editingId = null;
-  var undoStack = getTrash();
   var elToday = $('todayEntries'), elAll = $('allEntries'), elReports = $('reportList');
   var elTodayCount = $('todayCount'), elBanner = $('reportBanner'), elBannerCount = $('bannerCount');
   var elBackupBanner = $('backupBanner');
   var elToast = $('toast');
-  var elUndoBar = $('undoBar'), elUndoText = $('undoText'), undoTimer;
+  var elTrash = $('trashEntries'), elTrashCount = $('trashCount');
 
   var toastTimer;
   function toast(msg) {
@@ -87,30 +86,67 @@
     var removed = entries[idx];
     entries.splice(idx, 1);
     save(K_ENTRIES, entries);
-    undoStack.push({ entry: removed, index: idx });
-    setTrash(undoStack);
+    var trash = getTrash();
+    trash.push({ entry: removed, index: idx, deletedAt: Date.now() });
+    setTrash(trash);
     renderAll();
-    showUndoBar();
+    toast('已移到回收站 🗑');
   }
-  function undoDelete() {
-    if (!undoStack.length) { hideUndoBar(); return; }
-    var last = undoStack.pop();
-    setTrash(undoStack);
+  function restoreFromTrash(id) {
+    var trash = getTrash(), pos = -1;
+    for (var i = 0; i < trash.length; i++) { if (trash[i].entry.id === id) { pos = i; break; } }
+    if (pos < 0) return;
+    var item = trash[pos];
+    trash.splice(pos, 1); setTrash(trash);
     var entries = getEntries();
-    var idx = Math.max(0, Math.min(last.index, entries.length));
-    entries.splice(idx, 0, last.entry);
+    var idx = Math.max(0, Math.min(item.index, entries.length));
+    entries.splice(idx, 0, item.entry);
     save(K_ENTRIES, entries);
     renderAll();
-    if (undoStack.length) showUndoBar(); else hideUndoBar();
-    toast('已找回 ✨');
+    toast('已恢复 ✨');
   }
-  function showUndoBar() {
-    elUndoText.textContent = '已删除 ' + undoStack.length + ' 条碎碎念' + (undoStack.length > 1 ? '（可逐条找回）' : '');
-    elUndoBar.hidden = false;
-    clearTimeout(undoTimer);
-    undoTimer = setTimeout(hideUndoBar, 6000);
+  function eraseFromTrash(id) {
+    var trash = getTrash().filter(function (it) { return it.entry.id !== id; });
+    setTrash(trash);
+    renderTrash();
+    toast('已彻底删除');
   }
-  function hideUndoBar() { elUndoBar.hidden = true; clearTimeout(undoTimer); }
+  function emptyTrash() {
+    if (!getTrash().length) { toast('回收站本来就是空的'); return; }
+    if (confirm('确定清空回收站吗？里面的内容会永久删除，无法恢复。')) {
+      setTrash([]); renderTrash(); toast('回收站已清空');
+    }
+  }
+  var TRASH_DAYS = 30;
+  function purgeExpiredTrash() {
+    var t = getTrash();
+    if (!t.length) return;
+    var kept = t.filter(function (it) { return (it.deletedAt || Date.now()) > Date.now() - TRASH_DAYS * 86400000; });
+    if (kept.length !== t.length) setTrash(kept);
+  }
+  function renderTrash() {
+    if (elTrashCount) elTrashCount.textContent = getTrash().length;
+    var trash = getTrash();
+    if (!trash.length) {
+      elTrash.innerHTML = '<p style="color:var(--ink-soft);font-size:14px;padding:6px 4px">回收站是空的，放心～</p>';
+      return;
+    }
+    elTrash.innerHTML = '';
+    trash.forEach(function (it) {
+      var left = Math.max(0, Math.ceil(((it.deletedAt || Date.now()) + TRASH_DAYS * 86400000 - Date.now()) / 86400000));
+      var div = document.createElement('div');
+      div.className = 'entry';
+      var t = document.createElement('div'); t.className = 'entry-text'; t.textContent = it.entry.text;
+      var time = document.createElement('div'); time.className = 'entry-time';
+      time.textContent = fmtTime(it.entry.ts) + ' · ' + left + ' 天后自动清空';
+      var restore = document.createElement('button'); restore.className = 'entry-restore'; restore.textContent = '♻️'; restore.setAttribute('aria-label', '恢复');
+      restore.onclick = function () { restoreFromTrash(it.entry.id); };
+      var erase = document.createElement('button'); erase.className = 'entry-del'; erase.textContent = '🗑'; erase.setAttribute('aria-label', '彻底删除');
+      erase.onclick = function () { eraseFromTrash(it.entry.id); };
+      div.appendChild(t); div.appendChild(time); div.appendChild(restore); div.appendChild(erase);
+      elTrash.appendChild(div);
+    });
+  }
   function updateEntry(id, text) {
     text = (text || '').trim();
     if (!text) return false;
@@ -191,6 +227,7 @@
     elTodayCount.textContent = entriesOfDate(today).length + ' 条';
     renderEntries(elAll, getEntries());
     renderReports();
+    renderTrash();
     checkBanner();
     checkBackupReminder();
   }
@@ -458,7 +495,7 @@
 
   /* ---------- Tab ---------- */
   function switchTab(name) {
-    ['capture', 'all', 'report'].forEach(function (n) {
+    ['capture', 'all', 'trash', 'report'].forEach(function (n) {
       $('screen' + n.charAt(0).toUpperCase() + n.slice(1)).hidden = (n !== name);
     });
     document.querySelectorAll('.tab').forEach(function (t) {
@@ -500,8 +537,7 @@
   }
   function clearAll() {
     if (confirm('确定清空所有碎碎念和报告吗？此操作无法恢复。')) {
-      save(K_ENTRIES, []); save(K_REPORTS, []); setTrash([]); undoStack = [];
-      hideUndoBar();
+      save(K_ENTRIES, []); save(K_REPORTS, []); setTrash([]);
       renderAll(); toast('已清空');
     }
   }
@@ -555,7 +591,7 @@
   /* ---------- 事件绑定 ---------- */
   function bind() {
     elMic.onclick = toggleMic;
-    $('btnUndo').onclick = undoDelete;
+    $('btnEmptyTrash').onclick = emptyTrash;
     $('btnSave').onclick = commitInput;
     $('btnCancelEdit').onclick = cancelEdit;
     $('btnSettings').onclick = openSettings;
@@ -585,8 +621,8 @@
   function init() {
     setupSpeech();
     bind();
+    purgeExpiredTrash();
     renderAll();
-    if (undoStack.length) showUndoBar();
     askNotify();
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(function () {});
