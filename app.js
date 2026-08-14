@@ -215,11 +215,11 @@
       div.className = 'entry';
       var t = document.createElement('div'); t.className = 'entry-text'; t.textContent = e.text;
       var time = document.createElement('div'); time.className = 'entry-time'; time.textContent = fmtTime(e.ts);
-      var edit = document.createElement('button'); edit.className = 'entry-edit'; edit.textContent = '✏️'; edit.setAttribute('aria-label', '编辑');
-      edit.onclick = function () { startEdit(e); };
+      var hint = document.createElement('span'); hint.className = 'entry-edit-hint'; hint.textContent = '✏️'; hint.setAttribute('aria-hidden', 'true');
       var del = document.createElement('button'); del.className = 'entry-del'; del.textContent = '🗑'; del.setAttribute('aria-label', '删除');
-      del.onclick = function () { deleteEntry(e.id); };
-      div.appendChild(t); div.appendChild(time); div.appendChild(edit); div.appendChild(del);
+      del.onclick = function (ev) { ev.stopPropagation(); deleteEntry(e.id); };
+      div.appendChild(t); div.appendChild(time); div.appendChild(hint); div.appendChild(del);
+      div.onclick = function () { startEdit(e); };
       container.appendChild(div);
     });
   }
