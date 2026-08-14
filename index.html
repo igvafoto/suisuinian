@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="碎碎念" />
   <meta name="theme-color" content="#ff8a65" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon-v2.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="stylesheet" href="styles.css" />
   <title>碎碎念 · 语音日记</title>
@@ -26,7 +26,7 @@
 
     <main class="screen" id="screenCapture">
       <section class="capture-card">
-        <p class="capture-hint" id="captureHint">想说什么，按住说话，或点麦克风开始</p>
+        <p class="capture-hint" id="captureHint">点麦克风开始说，会一直听，再点一下自动保存</p>
         <div class="mic-wrap">
           <button id="btnMic" class="mic-btn" aria-label="开始说话">
             <span class="mic-glyph">🎙️</span>
@@ -35,6 +35,7 @@
         <div class="live-text" id="liveText" hidden></div>
         <textarea id="inputBox" class="input-box" rows="3" placeholder="也可以在这里直接打字，或点文本框后再点键盘上的麦克风按钮说话…"></textarea>
         <div class="capture-actions">
+          <button id="btnCancelEdit" class="ghost-btn" hidden>取消修改</button>
           <button id="btnSave" class="primary-btn">保存这条碎碎念</button>
         </div>
       </section>
@@ -45,6 +46,14 @@
           <span>点我生成今日回顾</span>
         </div>
         <button id="btnGenFromBanner" class="ghost-btn">生成报告</button>
+      </div>
+
+      <div class="report-banner backup-banner" id="backupBanner" hidden>
+        <div class="report-banner-text">
+          <strong>📦 好久没备份啦</strong>
+          <span>超过 7 天没导出备份，点我去存一份更安全</span>
+        </div>
+        <button id="btnBackupNow" class="ghost-btn">去备份</button>
       </div>
 
       <section class="today-wrap">
@@ -97,12 +106,23 @@
           <small>每天这个时间点，打开 App 时会提醒你来看昨天的回顾。</small>
         </label>
         <button id="btnExport" class="ghost-btn wide">复制全部碎碎念给小巴</button>
+        <div class="backup-row">
+          <button id="btnExportFile" class="ghost-btn wide">⬇️ 导出备份到文件</button>
+          <button id="btnImportFile" class="ghost-btn wide">⬆️ 从备份文件恢复</button>
+          <input type="file" id="fileImport" accept="application/json" hidden />
+        </div>
+        <p class="backup-tip">⚠️ 手机清缓存或删 App 会丢数据，建议定期把备份存到「文件」App 或隔空投送给自己。</p>
         <button id="btnClearAll" class="danger-btn wide">清空所有数据</button>
       </div>
     </div>
   </div>
 
   <div class="toast" id="toast" hidden></div>
+
+  <div class="undo-bar" id="undoBar" hidden>
+    <span class="undo-text" id="undoText">已删除 1 条碎碎念</span>
+    <button class="undo-btn" id="btnUndo">撤销</button>
+  </div>
 
   <script src="app.js"></script>
 </body>

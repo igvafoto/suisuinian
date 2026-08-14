@@ -1,4 +1,4 @@
-var CACHE_NAME = "murmur-v1";
+var CACHE_NAME = "murmur-v3";
 var ASSETS = [
   "./", "./index.html", "./manifest.json", "./styles.css", "./app.js",
   "./icon-192.png", "./icon-512.png", "./icon-1024.png", "./apple-touch-icon.png"
@@ -16,13 +16,22 @@ self.addEventListener("activate", function (e) {
   self.clients.claim();
 });
 
+// 联网优先：每次打开都尽量拉服务器上的最新文件，离线才用缓存
 self.addEventListener("fetch", function (e) {
-  e.respondWith(caches.match(e.request).then(function (cached) {
-    if (cached) return cached;
-    return fetch(e.request).then(function (response) {
-      var respClone = response.clone();
-      caches.open(CACHE_NAME).then(function (cache) { cache.put(e.request, respClone); });
-      return response;
-    }).catch(function () { return cached; });
-  }));
+  if (e.request.method !== "GET") return;
+  e.respondWith(
+    fetch(e.request)
+      .then(function (response) {
+        if (response && response.status === 200 && response.type === "basic") {
+          var respClone = response.clone();
+          caches.open(CACHE_NAME).then(function (cache) { cache.put(e.request, respClone); });
+        }
+        return response;
+      })
+      .catch(function () {
+        return caches.match(e.request).then(function (cached) {
+          return cached || caches.match("./");
+        });
+      })
+  );
 });
