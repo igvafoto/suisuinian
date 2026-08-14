@@ -173,20 +173,20 @@ html, body {
   border-radius: 16px; padding: 12px 14px;
   box-shadow: 0 4px 14px rgba(244,104,63,0.08);
   position: relative;
-  cursor: pointer;
-  transition: background .15s ease, transform .1s ease;
 }
-.entry:active { background: #fbeee6; transform: scale(0.992); }
-.entry .entry-text { font-size: 15px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; padding-right: 64px; }
+.entry .entry-text { font-size: 15px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
 .entry .entry-time { font-size: 12px; color: var(--ink-soft); margin-top: 6px; }
-.entry .entry-edit-hint {
-  position: absolute; top: 10px; right: 38px; border: none; background: transparent;
-  color: var(--ink-soft); font-size: 15px; opacity: 0.5; pointer-events: none;
+.entry .entry-actions {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(74,59,52,0.08);
 }
-.entry .entry-del {
-  position: absolute; top: 10px; right: 10px; border: none; background: transparent;
-  color: var(--ink-soft); font-size: 15px; cursor: pointer;
+.entry .entry-edit, .entry .entry-del {
+  border: none; background: transparent; cursor: pointer;
+  font-size: 14px; padding: 7px 12px; border-radius: 10px; line-height: 1;
 }
+.entry .entry-edit { color: var(--accent-deep); font-weight: 600; }
+.entry .entry-del { color: #c0563f; }
+.entry .entry-edit:active, .entry .entry-del:active { background: rgba(74,59,52,0.07); }
 
 .day-label { font-size: 13px; color: var(--ink-soft); font-weight: 600; margin: 14px 4px 2px; }
 

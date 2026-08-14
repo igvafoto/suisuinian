@@ -215,11 +215,13 @@
       div.className = 'entry';
       var t = document.createElement('div'); t.className = 'entry-text'; t.textContent = e.text;
       var time = document.createElement('div'); time.className = 'entry-time'; time.textContent = fmtTime(e.ts);
-      var hint = document.createElement('span'); hint.className = 'entry-edit-hint'; hint.textContent = '✏️'; hint.setAttribute('aria-hidden', 'true');
-      var del = document.createElement('button'); del.className = 'entry-del'; del.textContent = '🗑'; del.setAttribute('aria-label', '删除');
+      var actions = document.createElement('div'); actions.className = 'entry-actions';
+      var edit = document.createElement('button'); edit.className = 'entry-edit'; edit.textContent = '✏️ 编辑'; edit.setAttribute('aria-label', '编辑');
+      edit.onclick = function (ev) { ev.stopPropagation(); startEdit(e); };
+      var del = document.createElement('button'); del.className = 'entry-del'; del.textContent = '🗑 删除'; del.setAttribute('aria-label', '删除');
       del.onclick = function (ev) { ev.stopPropagation(); deleteEntry(e.id); };
-      div.appendChild(t); div.appendChild(time); div.appendChild(hint); div.appendChild(del);
-      div.onclick = function () { startEdit(e); };
+      actions.appendChild(edit); actions.appendChild(del);
+      div.appendChild(t); div.appendChild(time); div.appendChild(actions);
       container.appendChild(div);
     });
   }
