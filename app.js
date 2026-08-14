@@ -190,6 +190,9 @@
     if (editingId) {
       updateEntry(editingId, text);
       editingId = null;
+      elInput.value = '';
+      accumText = '';
+      elLive.hidden = true; elLive.textContent = '';
       setSaveMode(false);
       toast('已修改 ✏️');
     } else {
