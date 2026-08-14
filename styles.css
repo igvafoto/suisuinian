@@ -53,7 +53,7 @@ html, body {
 
 .icon-btn {
   border: none; background: var(--card); color: var(--ink);
-  width: 44px; height: 44px; border-radius: 14px; font-size: 22px;
+  width: 88px; height: 88px; border-radius: 24px; font-size: 44px;
   box-shadow: var(--shadow); cursor: pointer;
 }
 
