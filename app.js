@@ -18,7 +18,7 @@
   function getEntries() { return load(K_ENTRIES, []); }
   function getReports() { return load(K_REPORTS, []); }
   function getSettings() {
-    return Object.assign({ apiKey: '', notifyTime: '09:00', lastBackupAt: '' }, load(K_SETTINGS, {}));
+    return Object.assign({ apiKey: '', lastBackupAt: '' }, load(K_SETTINGS, {}));
   }
   function setSettings(s) { save(K_SETTINGS, s); }
   function getTrash() { return load(K_TRASH, []); }
@@ -547,14 +547,12 @@
   function openSettings() {
     var s = getSettings();
     $('inputApiKey').value = s.apiKey || '';
-    $('inputNotifyTime').value = s.notifyTime || '09:00';
     $('settingsMask').hidden = false;
   }
   function closeSettings() {
     $('settingsMask').hidden = true;
     var s = getSettings();
     s.apiKey = $('inputApiKey').value.trim();
-    s.notifyTime = $('inputNotifyTime').value;
     setSettings(s);
     toast('已保存');
   }
