@@ -42,6 +42,18 @@
     var d = new Date(iso);
     return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
   }
+  var WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  function weekdayOf(ds) {
+    var p = String(ds).split('-');
+    return WEEKDAYS[new Date(+p[0], +p[1] - 1, +p[2]).getDay()];
+  }
+  function fmtDateCN(ds) {
+    var p = String(ds).split('-');
+    return (+p[1]) + '月' + (+p[2]) + '日 ' + weekdayOf(ds);
+  }
+  function fmtStamp(iso) {
+    return fmtDateCN(dateStr(new Date(iso))) + ' ' + fmtTime(iso);
+  }
 
   /* ---------- DOM ---------- */
   var $ = function (id) { return document.getElementById(id); };
@@ -138,7 +150,7 @@
       div.className = 'entry';
       var t = document.createElement('div'); t.className = 'entry-text'; t.textContent = it.entry.text;
       var time = document.createElement('div'); time.className = 'entry-time';
-      time.textContent = fmtTime(it.entry.ts) + ' · ' + left + ' 天后自动清空';
+      time.textContent = fmtStamp(it.entry.ts) + ' · ' + left + ' 天后自动清空';
       var restore = document.createElement('button'); restore.className = 'entry-restore'; restore.textContent = '♻️'; restore.setAttribute('aria-label', '恢复');
       restore.onclick = function () { restoreFromTrash(it.entry.id); };
       var erase = document.createElement('button'); erase.className = 'entry-del'; erase.textContent = '🗑'; erase.setAttribute('aria-label', '彻底删除');
@@ -214,7 +226,7 @@
       var div = document.createElement('div');
       div.className = 'entry';
       var t = document.createElement('div'); t.className = 'entry-text'; t.textContent = e.text;
-      var time = document.createElement('div'); time.className = 'entry-time'; time.textContent = fmtTime(e.ts);
+      var time = document.createElement('div'); time.className = 'entry-time'; time.textContent = fmtStamp(e.ts);
       var actions = document.createElement('div'); actions.className = 'entry-actions';
       var edit = document.createElement('button'); edit.className = 'entry-edit'; edit.textContent = '✏️ 编辑'; edit.setAttribute('aria-label', '编辑');
       edit.onclick = function (ev) { ev.stopPropagation(); startEdit(e); };
@@ -345,7 +357,7 @@
     elReports.innerHTML = '';
     reps.slice().reverse().forEach(function (r) {
       var card = document.createElement('div'); card.className = 'report-card';
-      var h = document.createElement('h4'); h.textContent = '📅 ' + r.date + ' 的回顾';
+      var h = document.createElement('h4'); h.textContent = '📅 ' + r.date + '（' + weekdayOf(r.date) + '）的回顾';
       var body = document.createElement('div'); body.className = 'report-body';
       var secs = parseReport(r.content);
       body.innerHTML = secs ? renderReportHTML(secs) : escapeHtml(r.content);
@@ -367,7 +379,7 @@
 
   function buildPrompt(ds) {
     var list = entriesOfDate(ds).map(function (e) { return '· ' + e.text; }).join('\n');
-    return '你是一个温柔的生活记录助手，名字叫小巴。下面是一位用户在「' + ds + '」这一天里随口说出的Murmur' +
+    return '你是一个温柔的生活记录助手，名字叫小巴。下面是一位用户在「' + ds + '（' + weekdayOf(ds) + '）」这一天里随口说出的Murmur' +
       '（语音转文字，可能有口语、重复、错别字或不完整的句子）。请帮 ta 整理成一份温暖的「今日回顾」报告。\n\n' +
       '请严格按以下 9 个板块输出，每板块一行标题（带【】）：\n' +
       '1. 【今日关键词】用 3-6 个词提炼。\n' +
