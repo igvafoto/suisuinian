@@ -394,7 +394,13 @@
         stream: false
       })
     }).then(function (r) {
-      if (!r.ok) return r.text().then(function (t) { throw new Error('API ' + r.status + ': ' + t); });
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          var e = new Error('API ' + r.status + ': ' + t);
+          e.code = r.status;
+          throw e;
+        });
+      }
       return r.json();
     }).then(function (d) {
       if (!d.choices || !d.choices[0]) throw new Error('返回格式异常');
@@ -423,8 +429,25 @@
       })
       .catch(function (err) {
         console.error(err);
-        toast('生成失败：可能是网络或 Key 问题。可点「复制给小巴」让我来写');
+        var msg = '生成失败：';
+        if (err.code === 401) msg += 'API Key 无效或已过期，请去设置重新填一下。';
+        else if (err.code === 429) msg += 'DeepSeek 调用太频繁或余额不足，请稍后再试。';
+        else if (err.code >= 500) msg += 'DeepSeek 服务器有点忙，请稍后再试。';
+        else if (!err.code) msg += '网络连接不上，检查一下网络或稍后再试。';
+        else msg += '可能是网络或 Key 问题，可点「复制给小巴」让我来写。';
+        toast(msg);
       });
+  }
+
+  function maybeAutoGenerate() {
+    var ds = unreportedDate();
+    if (!ds) return;
+    var s = getSettings();
+    if (!s.apiKey) return;
+    if (s.lastAutoGen === ds) return; // 今天已经自动尝试过了
+    s.lastAutoGen = ds;
+    setSettings(s);
+    setTimeout(generateReport, 600);
   }
 
   /* ---------- 语音识别 ---------- */
@@ -628,6 +651,7 @@
     bind();
     purgeExpiredTrash();
     renderAll();
+    maybeAutoGenerate();
     askNotify();
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(function () {});
