@@ -357,14 +357,26 @@
     elReports.innerHTML = '';
     reps.slice().reverse().forEach(function (r) {
       var card = document.createElement('div'); card.className = 'report-card';
+      var head = document.createElement('div'); head.className = 'report-head';
       var h = document.createElement('h4'); h.textContent = '📅 ' + r.date + '（' + weekdayOf(r.date) + '）的回顾';
+      var del = document.createElement('button'); del.className = 'report-del'; del.textContent = '🗑'; del.setAttribute('aria-label', '删除报告');
+      del.onclick = function () { deleteReport(r.date); };
+      head.appendChild(h); head.appendChild(del);
       var body = document.createElement('div'); body.className = 'report-body';
       var secs = parseReport(r.content);
       body.innerHTML = secs ? renderReportHTML(secs) : escapeHtml(r.content);
       var d = document.createElement('div'); d.className = 'report-date'; d.textContent = '生成于 ' + fmtTime(r.ts);
-      card.appendChild(h); card.appendChild(body); card.appendChild(d);
+      card.appendChild(head); card.appendChild(body); card.appendChild(d);
       elReports.appendChild(card);
     });
+  }
+
+  function deleteReport(date) {
+    if (!confirm('确定删除 ' + date + ' 的回顾报告吗？删除后无法恢复。')) return;
+    var reps = getReports().filter(function (r) { return r.date !== date; });
+    save(K_REPORTS, reps);
+    renderReports();
+    toast('已删除该报告');
   }
 
   function checkBanner() {
