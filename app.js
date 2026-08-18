@@ -348,6 +348,21 @@
     }).join('');
   }
 
+  function buildReportCard(r) {
+    var card = document.createElement('div'); card.className = 'report-card';
+    var head = document.createElement('div'); head.className = 'report-head';
+    var h = document.createElement('h4'); h.textContent = '📅 ' + r.date + '（' + weekdayOf(r.date) + '）的回顾';
+    var del = document.createElement('button'); del.className = 'report-del'; del.textContent = '🗑'; del.setAttribute('aria-label', '删除报告');
+    del.onclick = function () { deleteReport(r.date); };
+    head.appendChild(h); head.appendChild(del);
+    var body = document.createElement('div'); body.className = 'report-body';
+    var secs = parseReport(r.content);
+    body.innerHTML = secs ? renderReportHTML(secs) : escapeHtml(r.content);
+    var d = document.createElement('div'); d.className = 'report-date'; d.textContent = '生成于 ' + fmtTime(r.ts);
+    card.appendChild(head); card.appendChild(body); card.appendChild(d);
+    return card;
+  }
+
   function renderReports() {
     var reps = getReports();
     if (!reps.length) {
@@ -355,19 +370,39 @@
       return;
     }
     elReports.innerHTML = '';
-    reps.slice().reverse().forEach(function (r) {
-      var card = document.createElement('div'); card.className = 'report-card';
-      var head = document.createElement('div'); head.className = 'report-head';
-      var h = document.createElement('h4'); h.textContent = '📅 ' + r.date + '（' + weekdayOf(r.date) + '）的回顾';
-      var del = document.createElement('button'); del.className = 'report-del'; del.textContent = '🗑'; del.setAttribute('aria-label', '删除报告');
-      del.onclick = function () { deleteReport(r.date); };
-      head.appendChild(h); head.appendChild(del);
-      var body = document.createElement('div'); body.className = 'report-body';
-      var secs = parseReport(r.content);
-      body.innerHTML = secs ? renderReportHTML(secs) : escapeHtml(r.content);
-      var d = document.createElement('div'); d.className = 'report-date'; d.textContent = '生成于 ' + fmtTime(r.ts);
-      card.appendChild(head); card.appendChild(body); card.appendChild(d);
-      elReports.appendChild(card);
+    // 按月分组（YYYY-MM）
+    var groups = {}, order = [];
+    reps.forEach(function (r) {
+      var ym = (r.date || '').slice(0, 7);
+      if (!ym) return;
+      if (!groups[ym]) { groups[ym] = []; order.push(ym); }
+      groups[ym].push(r);
+    });
+    order.sort().reverse(); // 最近的月份在前
+    order.forEach(function (ym, gi) {
+      var monthReps = groups[ym];
+      var label = ym.slice(0, 4) + '年' + parseInt(ym.slice(5, 7), 10) + '月';
+      var section = document.createElement('div'); section.className = 'report-group';
+      var head = document.createElement('button'); head.type = 'button'; head.className = 'report-group-head';
+      var title = document.createElement('span'); title.className = 'rg-title'; title.textContent = label;
+      var count = document.createElement('span'); count.className = 'rg-count'; count.textContent = monthReps.length + ' 篇';
+      var caret = document.createElement('span'); caret.className = 'rg-caret'; caret.textContent = '▾';
+      head.appendChild(title); head.appendChild(count); head.appendChild(caret);
+      var wrap = document.createElement('div'); wrap.className = 'report-group-body';
+      monthReps.slice().reverse().forEach(function (r) { wrap.appendChild(buildReportCard(r)); });
+      // 仅展开最近一个月，其余默认收起
+      if (gi > 0) {
+        section.classList.add('collapsed');
+        wrap.hidden = true;
+        caret.textContent = '▸';
+      }
+      head.onclick = function () {
+        var collapsed = section.classList.toggle('collapsed');
+        wrap.hidden = collapsed;
+        caret.textContent = collapsed ? '▸' : '▾';
+      };
+      section.appendChild(head); section.appendChild(wrap);
+      elReports.appendChild(section);
     });
   }
 
