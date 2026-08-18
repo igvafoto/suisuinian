@@ -370,39 +370,71 @@
       return;
     }
     elReports.innerHTML = '';
-    // 按月分组（YYYY-MM）
-    var groups = {}, order = [];
+    // 先按年份分组
+    var byYear = {}, years = [];
     reps.forEach(function (r) {
-      var ym = (r.date || '').slice(0, 7);
-      if (!ym) return;
-      if (!groups[ym]) { groups[ym] = []; order.push(ym); }
-      groups[ym].push(r);
+      var y = (r.date || '').slice(0, 4);
+      if (!y) return;
+      if (!byYear[y]) { byYear[y] = []; years.push(y); }
+      byYear[y].push(r);
     });
-    order.sort().reverse(); // 最近的月份在前
-    order.forEach(function (ym, gi) {
-      var monthReps = groups[ym];
-      var label = ym.slice(0, 4) + '年' + parseInt(ym.slice(5, 7), 10) + '月';
-      var section = document.createElement('div'); section.className = 'report-group';
-      var head = document.createElement('button'); head.type = 'button'; head.className = 'report-group-head';
-      var title = document.createElement('span'); title.className = 'rg-title'; title.textContent = label;
-      var count = document.createElement('span'); count.className = 'rg-count'; count.textContent = monthReps.length + ' 篇';
-      var caret = document.createElement('span'); caret.className = 'rg-caret'; caret.textContent = '▾';
-      head.appendChild(title); head.appendChild(count); head.appendChild(caret);
-      var wrap = document.createElement('div'); wrap.className = 'report-group-body';
-      monthReps.slice().reverse().forEach(function (r) { wrap.appendChild(buildReportCard(r)); });
-      // 仅展开最近一个月，其余默认收起
-      if (gi > 0) {
-        section.classList.add('collapsed');
-        wrap.hidden = true;
-        caret.textContent = '▸';
+    years.sort().reverse(); // 最近的年份在前
+    years.forEach(function (y, yi) {
+      var yearReps = byYear[y];
+      var ySection = document.createElement('div'); ySection.className = 'report-year';
+      var yHead = document.createElement('button'); yHead.type = 'button'; yHead.className = 'report-year-head';
+      var yTitle = document.createElement('span'); yTitle.className = 'ry-title'; yTitle.textContent = y + '年';
+      var yCount = document.createElement('span'); yCount.className = 'ry-count'; yCount.textContent = yearReps.length + ' 篇';
+      var yCaret = document.createElement('span'); yCaret.className = 'ry-caret'; yCaret.textContent = '▾';
+      yHead.appendChild(yTitle); yHead.appendChild(yCount); yHead.appendChild(yCaret);
+      var yBody = document.createElement('div'); yBody.className = 'report-year-body';
+      // 年份内再按月分组（YYYY-MM）
+      var groups = {}, order = [];
+      yearReps.forEach(function (r) {
+        var ym = (r.date || '').slice(0, 7);
+        if (!ym) return;
+        if (!groups[ym]) { groups[ym] = []; order.push(ym); }
+        groups[ym].push(r);
+      });
+      order.sort().reverse(); // 最近的月份在前
+      order.forEach(function (ym, mi) {
+        var monthReps = groups[ym];
+        var label = parseInt(ym.slice(5, 7), 10) + '月';
+        var section = document.createElement('div'); section.className = 'report-group';
+        var head = document.createElement('button'); head.type = 'button'; head.className = 'report-group-head';
+        var title = document.createElement('span'); title.className = 'rg-title'; title.textContent = label;
+        var count = document.createElement('span'); count.className = 'rg-count'; count.textContent = monthReps.length + ' 篇';
+        var caret = document.createElement('span'); caret.className = 'rg-caret'; caret.textContent = '▾';
+        head.appendChild(title); head.appendChild(count); head.appendChild(caret);
+        var wrap = document.createElement('div'); wrap.className = 'report-group-body';
+        monthReps.slice().reverse().forEach(function (r) { wrap.appendChild(buildReportCard(r)); });
+        // 仅展开「最近年份 + 最近月份」，其余默认收起
+        if (yi > 0 || mi > 0) {
+          section.classList.add('collapsed');
+          wrap.hidden = true;
+          caret.textContent = '▸';
+        }
+        head.onclick = function () {
+          var collapsed = section.classList.toggle('collapsed');
+          wrap.hidden = collapsed;
+          caret.textContent = collapsed ? '▸' : '▾';
+        };
+        section.appendChild(head); section.appendChild(wrap);
+        yBody.appendChild(section);
+      });
+      // 仅展开最近一个年份，其余年份默认收起
+      if (yi > 0) {
+        ySection.classList.add('collapsed');
+        yBody.hidden = true;
+        yCaret.textContent = '▸';
       }
-      head.onclick = function () {
-        var collapsed = section.classList.toggle('collapsed');
-        wrap.hidden = collapsed;
-        caret.textContent = collapsed ? '▸' : '▾';
+      yHead.onclick = function () {
+        var collapsed = ySection.classList.toggle('collapsed');
+        yBody.hidden = collapsed;
+        yCaret.textContent = collapsed ? '▸' : '▾';
       };
-      section.appendChild(head); section.appendChild(wrap);
-      elReports.appendChild(section);
+      ySection.appendChild(yHead); ySection.appendChild(yBody);
+      elReports.appendChild(ySection);
     });
   }
 
